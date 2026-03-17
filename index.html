@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>自动播放音频示例</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        .container {
+            text-align: center;
+            background-color: white;
+            padding: 2rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 1rem;
+        }
+        p {
+            color: #666;
+            margin-bottom: 2rem;
+        }
+        .audio-controls {
+            margin-top: 1rem;
+        }
+        button {
+            padding: 0.5rem 1rem;
+            margin: 0 0.5rem;
+            border: none;
+            border-radius: 4px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>自动播放音频示例</h1>
+        <p>页面加载完成后，音频将自动播放。</p>
+        
+        <!-- 音频元素 -->
+        <audio id="audioPlayer" autoplay loop>
+            <source src="可不可以-张紫豪 (2).mp3" type="audio/mpeg">
+            您的浏览器不支持音频元素。
+        </audio>
+        
+        <!-- 音频控制按钮 -->
+        <div class="audio-controls">
+            <button id="playBtn">播放</button>
+            <button id="pauseBtn">暂停</button>
+            <button id="unmuteBtn">取消静音</button>
+        </div>
+    </div>
+    
+    <script>
+        // 获取音频元素
+        const audio = document.getElementById('audioPlayer');
+        
+        // 控制按钮
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const unmuteBtn = document.getElementById('unmuteBtn');
+        
+        // 错误处理
+        audio.addEventListener('error', function(e) {
+            console.error('音频加载失败:', e);
+            alert('音频加载失败，请检查文件路径是否正确。');
+        });
+        
+        // 播放按钮事件
+        playBtn.addEventListener('click', function() {
+            audio.play().catch(function(error) {
+                console.log('播放失败:', error);
+                alert('播放失败，可能需要您先与页面进行交互。');
+            });
+        });
+        
+        // 暂停按钮事件
+        pauseBtn.addEventListener('click', function() {
+            audio.pause();
+        });
+        
+        // 取消静音按钮事件
+        unmuteBtn.addEventListener('click', function() {
+            audio.muted = false;
+        });
+        
+        // 页面加载完成后尝试播放
+        window.addEventListener('DOMContentLoaded', function() {
+            // 尝试自动播放
+            audio.play().catch(function(error) {
+                console.log('自动播放失败，需要用户交互:', error);
+                
+                // 显示提示
+                alert('音频需要您的交互才能播放，请点击页面任意位置。');
+                
+                // 监听用户第一次交互，然后播放
+                function handleUserInteraction() {
+                    audio.play().catch(function(error) {
+                        console.log('交互后播放失败:', error);
+                        alert('播放失败，请检查音频文件是否存在。');
+                    });
+                    // 移除事件监听器，避免重复触发
+                    document.removeEventListener('click', handleUserInteraction);
+                    document.removeEventListener('touchstart', handleUserInteraction);
+                    document.removeEventListener('keydown', handleUserInteraction);
+                }
+                
+                // 添加用户交互监听器
+                document.addEventListener('click', handleUserInteraction);
+                document.addEventListener('touchstart', handleUserInteraction);
+                document.addEventListener('keydown', handleUserInteraction);
+            });
+        });
+        
+        // 检测浏览器是否支持自动播放
+        function checkAutoPlaySupport() {
+            const promise = audio.play();
+            
+            if (promise !== undefined) {
+                promise.then(function() {
+                    console.log('自动播放支持');
+                }).catch(function(error) {
+                    console.log('自动播放不支持:', error);
+                });
+            }
+        }
+        
+        // 调用检测函数
+        checkAutoPlaySupport();
+    </script>
+</body>
+</html>
